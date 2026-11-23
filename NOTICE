@@ -1,0 +1,41 @@
+NOTICE
+======
+
+canalystii-ts is an experimental TypeScript rewrite/port based on the
+protocol observations and implementation in projectgus/python-canalystii.
+
+Upstream source:
+https://github.com/projectgus/python-canalystii
+Reviewed revision:
+7ef3a4a369a88976291ea91f93ef2b8c322855b9 (v0.1)
+
+Copyright (c) 2021 Angus Gratton (upstream).
+Copyright (c) 2026 canalystii-ts contributors (original additions).
+
+License: Apache-2.0. The complete license text is in LICENSE.
+
+Changes in this TypeScript port:
+- Replaced PyUSB with browser WebUSB and optional Node.js usb backends.
+- Added strict validation, asynchronous lifecycle/serialization and fault isolation.
+- Corrected start:false initialization and preserved RTR DLC independently of data.
+- Added mock-only tests, Chinese documentation and examples; no hardware verification.
+
+Source mapping:
+- canalystii/protocol.py -> src/protocol.ts: constants and binary layouts.
+- canalystii/device.py -> src/device.ts: device command/receive/send flow;
+  endpoint assignments and the 18-entry timing table also moved to src/protocol.ts.
+- The TypeScript package entry point is reorganized; it does not port a
+  substantive implementation from the upstream __init__.py export-only API.
+
+Upstream license note:
+The upstream root LICENSE and setup.py identify BSD-3-Clause, while
+protocol.py, device.py and __init__.py carry Apache-2.0 SPDX markings.
+This distribution treats the per-file Apache-2.0 markings as the operative
+grant and licenses the whole package under Apache-2.0. The upstream BSD
+text is preserved unchanged in licenses/upstream-BSD-3-Clause.txt so that
+the original notice remains available to redistributors. This NOTICE is
+informational and does not modify the Apache-2.0 license.
+
+This project is not produced, endorsed, or supported by the device vendor.
+CANalyst-II, CANalyst-2, and Chuangxin Tech are used only to identify the
+compatibility target and may be trademarks of their respective owners.

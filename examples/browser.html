@@ -1,0 +1,64 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: Apache-2.0
+     Copyright (c) 2026 canalystii-ts contributors
+     See LICENSE and NOTICE. -->
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>CANalyst-II WebUSB 示例</title>
+    <script type="importmap">
+      { "imports": { "canalystii-ts": "../dist/index.js", "canalystii-ts/browser": "../dist/browser.js" } }
+    </script>
+  </head>
+  <body>
+    <p>请从 HTTPS 或 localhost 静态站点打开；此页面不自动发送 CAN 帧。</p>
+    <button id="connect">连接 CANalyst-II</button>
+    <button id="send" disabled>发送一帧 0x123</button>
+    <button id="disconnect" disabled>断开</button>
+    <pre id="log"></pre>
+    <script type="module">
+      import { CanalystDevice } from "canalystii-ts";
+      import { BrowserUsbTransport } from "canalystii-ts/browser";
+
+      const log = document.querySelector("#log");
+      const connect = document.querySelector("#connect");
+      const send = document.querySelector("#send");
+      const disconnect = document.querySelector("#disconnect");
+      let can;
+      connect.addEventListener("click", async () => {
+        connect.disabled = true;
+        try {
+          const transport = await BrowserUsbTransport.request();
+          can = new CanalystDevice(transport);
+          await can.open();
+          await can.init(0, { bitrate: 500000, start: false });
+          send.disabled = false;
+          disconnect.disabled = false;
+          log.textContent = "已初始化，尚未启动 CAN；请先确认这是安全测试台架。";
+        } catch (error) {
+          log.textContent = String(error);
+          try { await can?.close(); } catch (cleanup) { log.textContent += "\n" + String(cleanup); }
+          can = undefined;
+          connect.disabled = false;
+        }
+      });
+      send.addEventListener("click", async () => {
+        send.disabled = true;
+        try {
+          await can.start(0);
+          await can.send(0, { canId: 0x123, data: [1, 2] });
+          const frames = await can.receive(0);
+          log.textContent = "USB 写入完成，不代表 CAN ACK。接收：" + JSON.stringify(frames, null, 2);
+        } catch (error) { log.textContent = String(error); }
+        finally { send.disabled = false; }
+      });
+      disconnect.addEventListener("click", async () => {
+        send.disabled = true;
+        disconnect.disabled = true;
+        try { await can.close(); log.textContent = "已断开"; }
+        catch (error) { log.textContent = String(error); }
+        finally { can = undefined; connect.disabled = false; }
+      });
+    </script>
+  </body>
+</html>

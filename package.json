@@ -1,0 +1,27 @@
+{
+  "name": "canalystii-ts",
+  "version": "0.1.0-alpha.1",
+  "description": "Experimental CANalyst-II TypeScript driver with browser WebUSB and Node.js USB backends",
+  "type": "module",
+  "license": "Apache-2.0",
+  "engines": { "node": ">=20" },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./browser": { "types": "./dist/browser.d.ts", "import": "./dist/browser.js" },
+    "./node": { "types": "./dist/node.d.ts", "import": "./dist/node.js" },
+    "./protocol": { "types": "./dist/protocol.d.ts", "import": "./dist/protocol.js" }
+  },
+  "files": ["dist", "src", "README.md", "LICENSE", "NOTICE", "licenses", "docs", "examples"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/build-info.mjs",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "prepack": "npm run check && npm run build"
+  },
+  "peerDependencies": { "usb": "^2.15.0" },
+  "peerDependenciesMeta": { "usb": { "optional": true } },
+  "devDependencies": { "typescript": "^5.9.3", "@types/node": "^22.0.0", "usb": "^2.15.0" }
+}

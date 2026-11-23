@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 canalystii-ts contributors
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+*.tgz
+*-source.tar.gz
+*.log
+.DS_Store
+.env
+.env.*
+.npmrc
