@@ -892,7 +892,7 @@ function bindGlobal() {
 async function showBuildInfo() {
   const target = $('#build-info');
   try {
-    const response = await fetch(new URL('../dist/build-info.json', import.meta.url));
+    const response = await fetch(new URL('../dist/build-info.json', import.meta.url), { cache: 'no-store' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const info = await response.json();
     target.textContent = `v${info.version} · ${info.commit}${info.dirty ? ' · dirty' : ''} · ${info.builtAt}`;
