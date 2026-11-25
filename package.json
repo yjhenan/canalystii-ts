@@ -4,6 +4,11 @@
   "description": "Experimental CANalyst-II TypeScript driver with browser WebUSB and Node.js USB backends",
   "type": "module",
   "license": "Apache-2.0",
+  "author": "canalystii-ts contributors",
+  "keywords": ["can", "can-bus", "webusb", "usb", "canalyst-ii", "typescript"],
+  "repository": { "type": "git", "url": "git+https://github.com/yjhenan/canalystii-ts.git" },
+  "homepage": "https://yjhenan.github.io/canalystii-ts/",
+  "bugs": { "url": "https://github.com/yjhenan/canalystii-ts/issues" },
   "engines": { "node": ">=20" },
   "sideEffects": false,
   "main": "./dist/index.js",
@@ -12,7 +17,8 @@
     ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
     "./browser": { "types": "./dist/browser.d.ts", "import": "./dist/browser.js" },
     "./node": { "types": "./dist/node.d.ts", "import": "./dist/node.js" },
-    "./protocol": { "types": "./dist/protocol.d.ts", "import": "./dist/protocol.js" }
+    "./protocol": { "types": "./dist/protocol.d.ts", "import": "./dist/protocol.js" },
+    "./package.json": "./package.json"
   },
   "files": ["dist", "src", "README.md", "LICENSE", "NOTICE", "licenses", "docs", "examples"],
   "scripts": {
