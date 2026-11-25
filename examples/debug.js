@@ -40,7 +40,7 @@ const els = {
 
 const state = {
   can: null,
-  transport: null,
+  closing: false,
   authorized: [],
   polling: true,
   pollTimer: null,
@@ -62,7 +62,6 @@ function channelState() {
     periodInterval: 0,
     sent: 0,
     received: 0,
-    card: null,
     el: null,
   };
 }
@@ -185,7 +184,6 @@ function buildChannels() {
     el.periodStart.addEventListener('click', () => startPeriodic(channel));
     el.periodStop.addEventListener('click', () => stopPeriodic(channel));
 
-    state.channels[channel].card = card;
     state.channels[channel].el = el;
     els.channels.append(card);
     toggleCustomTiming(channel);
@@ -225,15 +223,14 @@ function refreshControls() {
     status === 'open' ? 'ok' : status === 'faulted' ? 'danger' : '',
   );
 
-  els.disconnect.disabled = !state.can;
-  els.connectNew.disabled = connected;
-  els.connectAuthorized.disabled = connected || state.authorized.length === 0;
-  els.refreshDevices.disabled = connected;
-  els.devices.disabled = connected;
+  els.disconnect.disabled = !state.can || state.closing;
+  els.connectNew.disabled = connected || state.closing;
+  els.connectAuthorized.disabled = connected || state.closing || state.authorized.length === 0;
+  els.refreshDevices.disabled = connected || state.closing;
+  els.devices.disabled = connected || state.closing;
   els.polling.disabled = !connected;
   els.pollApply.disabled = !connected;
   els.pause.disabled = !connected;
-  els.maxRows.disabled = false;
 
   for (const channel of [0, 1]) {
     const channelState = state.channels[channel];
@@ -326,7 +323,6 @@ async function connectTransport(transport) {
   await disconnect(true);
   const can = new CanalystDevice(transport);
   state.can = can;
-  state.transport = transport;
   try {
     await can.open();
   } catch (error) {
@@ -348,45 +344,51 @@ async function connectTransport(transport) {
 }
 
 async function disconnect(silent = false) {
-  stopPolling();
-  stopStatusTimer();
-  for (const channel of [0, 1]) stopPeriodic(channel, true);
+  state.closing = true;
+  try {
+    stopPolling();
+    stopStatusTimer();
+    for (const channel of [0, 1]) stopPeriodic(channel, true);
 
-  const can = state.can;
-  state.can = null;
-  state.transport = null;
-  if (can) {
-    try {
-      await can.close();
-    } catch (error) {
-      if (!silent) reportError('断开设备', error);
+    const can = state.can;
+    state.can = null;
+    // 先禁用界面，避免等待 close() 期间还能点发送
+    refreshControls();
+    if (can) {
+      try {
+        await can.close();
+      } catch (error) {
+        if (!silent) reportError('断开设备', error);
+      }
     }
-  }
 
-  for (const channel of [0, 1]) {
-    const channelState = state.channels[channel];
-    channelState.initialized = false;
-    channelState.started = false;
-    channelState.sent = 0;
-    channelState.received = 0;
-    const el = channelState.el;
-    if (!el) continue;
-    el.rx.textContent = '-';
-    el.tx.textContent = '-';
-    el.unknown.textContent = '-';
-    el.canRaw.textContent = '';
-    el.canRaw.classList.add('hidden');
-    el.periodInfo.textContent = '';
-    updateCounters(channel);
-  }
+    for (const channel of [0, 1]) {
+      const channelState = state.channels[channel];
+      channelState.initialized = false;
+      channelState.started = false;
+      channelState.sent = 0;
+      channelState.received = 0;
+      const el = channelState.el;
+      if (!el) continue;
+      el.rx.textContent = '-';
+      el.tx.textContent = '-';
+      el.unknown.textContent = '-';
+      el.canRaw.textContent = '';
+      el.canRaw.classList.add('hidden');
+      el.periodInfo.textContent = '';
+      updateCounters(channel);
+    }
 
-  if (state.paused) {
-    state.paused = false;
-    els.pause.textContent = '暂停显示';
+    if (state.paused) {
+      state.paused = false;
+      els.pause.textContent = '暂停显示';
+    }
+    els.deviceInfo.textContent = '尚未连接设备';
+    if (!silent) log('信息', '已断开设备。');
+  } finally {
+    state.closing = false;
+    refreshControls();
   }
-  els.deviceInfo.textContent = '尚未连接设备';
-  refreshControls();
-  if (!silent) log('信息', '已断开设备。');
 }
 
 async function initChannel(channel) {

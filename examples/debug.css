@@ -137,6 +137,11 @@ main {
   }
 }
 
+.channels-note {
+  margin: -4px 0 0;
+  font-size: 12px;
+}
+
 .panel {
   padding: 14px 16px;
   background: var(--panel);
