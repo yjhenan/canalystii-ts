@@ -54,7 +54,7 @@ import { BrowserUsbTransport } from 'canalystii-ts/browser';
 // import { NodeUsbTransport } from 'canalystii-ts/node';
 ```
 
-纯浏览器项目不需要安装 `usb` 或 Node 类型。npm 包只包含运行所需产物、源码、示例和文档；完整源码归档另外包含 `test/`、`tsconfig.json` 和锁文件。
+纯浏览器项目不需要安装 `usb` 或 Node 类型。npm 包只包含运行所需产物、源码、示例和文档；完整源码归档另外包含 `test/`、`scripts/`、`tsconfig.json` 和锁文件。
 
 ## 产物与版本核对
 
@@ -68,6 +68,8 @@ import { BrowserUsbTransport } from 'canalystii-ts/browser';
 解压源码归档后，在项目根目录运行 `npm ci --ignore-scripts --no-audit --no-fund`、`npm run check`、`npm test` 可以重新构建并执行模拟测试。依赖安装需要 npm 镜像可用，锁文件保留本次解析结果。
 
 `examples/browser.html` 自带 import map，指向 `../dist/`；使用 HTTPS 静态站点，或在本机用静态服务器打开 `http://localhost:8080/examples/browser.html`。静态服务器只提供文件，不转发 CAN。页面连接时使用 `start:false`；只有单独点击发送按钮才启动通道并发测试帧。
+
+`examples/debug.html` 是完整调试页，与 `browser.html` 共用同一份 `../dist/`；GitHub Pages 根路径会跳转到它，本地同样用静态服务器打开 `http://localhost:8080/examples/debug.html`。
 
 `examples/node.ts` 会访问真实设备并发送一帧，不要作为无硬件测试运行。在确认隔离台架后，可用支持类型剥离的 Node 版本执行 `node --experimental-strip-types examples/node.ts`，或先自行编译。
 
