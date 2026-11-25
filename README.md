@@ -5,7 +5,7 @@
 
 实验性 CANalyst-II（CANalyst-2）TypeScript 驱动，提供同一套协议层和两种传输后端：浏览器 WebUSB、Node.js `usb`。目标是直接通过 USB 访问设备，不依赖原厂 DLL 或本地转发服务。
 
-> 当前版本 `0.1.0-alpha.1` 未发布 npm，也没有真实 CANalyst-II 硬件可用于验收。自动化测试使用内存 USB 模拟器；请把它视为实验性预览，不要把模拟测试结果当作实机通过。
+> 当前版本 `0.1.0-alpha.1` 未发布 npm；源码在 GitHub，Pages 提供在线示例。没有真实 CANalyst-II 硬件可用于验收。自动化测试使用内存 USB 模拟器；请把它视为实验性预览，不要把模拟测试结果当作实机通过。
 
 ## 功能范围
 
@@ -18,7 +18,7 @@
 
 ## 安装
 
-本项目当前只交付本地 `.tgz`，不执行 npm 发布。安装包后：
+本项目不发布到 npm；npm 包以本地 `.tgz` 形式交付。安装包后：
 
 ```bash
 npm install ./canalystii-ts-0.1.0-alpha.1.tgz

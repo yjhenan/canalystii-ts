@@ -37,7 +37,7 @@
 | BSD 许可副本 | `licenses/upstream-BSD-3-Clause.txt` 与上游 `LICENSE` 字节一致，1462 字节。 |
 | Apache 许可 | 根 `LICENSE` 为完整 Apache-2.0 文本（11358 字节，包含第 1 至 9 条和 APPENDIX）。 |
 | 许可一致性 | 包级 `Apache-2.0`；所有源文件、文档和示例统一 SPDX `Apache-2.0`；上游 BSD 原文保留在 `licenses/` 作为历史披露，不再作为分发许可。 |
-| 版本控制 | 已初始化 Git 仓库并完成首次提交；`dist/` 不纳入版本控制，由 `prepack` 在打包前自动构建，避免提交编译产物或打出过期 `dist`。 |
+| 版本控制 | 已初始化 Git 仓库并推送到 GitHub；`dist/` 不纳入版本控制，由 `prepack` 在打包前自动构建，避免提交编译产物或打出过期 `dist`。 |
 
 ## 安装与入口
 
@@ -75,7 +75,7 @@ import { BrowserUsbTransport } from 'canalystii-ts/browser';
 
 ## 未完成的实机验收与限制
 
-**没有 CANalyst-II 实机，未验证真实 USB 枚举、授权、固件、Windows 驱动、Linux 权限、CAN ACK、吞吐量或长期稳定性。没有上传 GitHub，也没有执行 npm 发布。** 本交付完成的是实验性软件实现、模拟与安装验证，不是生产验收。
+**没有 CANalyst-II 实机，未验证真实 USB 枚举、授权、固件、Windows 驱动、Linux 权限、CAN ACK、吞吐量或长期稳定性。源码已上传 GitHub，并通过 GitHub Actions 运行 CI 和 Pages 部署；没有执行 npm 发布。** 本交付完成的是实验性软件实现、模拟与安装验证，不是生产验收。
 
 WebUSB 的安全上下文、用户授权及操作系统驱动约束仍然适用。Windows 要求可访问的 WinUSB 接口；若现有驱动已合适，不应一律要求使用 Zadig。Linux 需要设备访问权限；macOS/Linux 目标接口不能被其他驱动或应用占用。WebUSB 专用描述符并非访问许多已有设备的必要条件。[citation:Chrome WebUSB 设备与平台要求](https://developer.chrome.google.cn/docs/capabilities/build-for-webusb)
 
