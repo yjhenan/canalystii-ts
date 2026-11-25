@@ -97,6 +97,11 @@ h2 {
   font-size: 12px;
 }
 
+.build-info {
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
 .device-actions {
   display: flex;
   flex-wrap: wrap;

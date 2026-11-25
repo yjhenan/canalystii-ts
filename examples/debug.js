@@ -889,11 +889,24 @@ function bindGlobal() {
   els.dismissError.addEventListener('click', clearError);
 }
 
+async function showBuildInfo() {
+  const target = $('#build-info');
+  try {
+    const response = await fetch(new URL('../dist/build-info.json', import.meta.url));
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const info = await response.json();
+    target.textContent = `v${info.version} · ${info.commit}${info.dirty ? ' · dirty' : ''} · ${info.builtAt}`;
+  } catch {
+    target.textContent = '版本信息不可用（dist 未构建）';
+  }
+}
+
 function setup() {
   buildChannels();
   bindGlobal();
   refreshControls();
   refreshAuthorized();
+  showBuildInfo();
   log('信息', '调试台已就绪。WebUSB 需要 Chromium 桌面版和 HTTPS/localhost。');
 }
 
