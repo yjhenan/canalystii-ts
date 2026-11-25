@@ -56,9 +56,12 @@ cat node_modules/canalystii-ts/dist/build-info.json
 
 `requestDevice()` 应由按钮点击等用户手势直接触发；WebUSB 需要安全上下文（HTTPS 或 localhost）。当前实际验证目标是支持 WebUSB 的 Chromium 系列桌面浏览器（例如 Chrome、Edge），不是所有浏览器都会提供 `navigator.usb`。浏览器 WebUSB 的供应商专用接口、驱动占用和 Windows WinUSB 要求见 [Chrome WebUSB 文档](https://developer.chrome.google.cn/docs/capabilities/build-for-webusb)。
 
-在线示例（GitHub Pages，HTTPS）：<https://yjhenan.github.io/canalystii-ts/examples/browser.html>。
+在线示例（GitHub Pages，HTTPS）：
 
-仓库中的 `examples/browser.html` 带有 import map，也可从项目根目录启动静态服务器后直接打开：
+- 完整调试页：<https://yjhenan.github.io/canalystii-ts/examples/debug.html>
+- 最小示例：<https://yjhenan.github.io/canalystii-ts/examples/browser.html>
+
+`examples/debug.html` 提供双通道初始化、标准／扩展／RTR 发送、周期发送、接收表格、ID／通道过滤、暂停显示、CSV 导出、TX/RX 队列和 CAN 状态查询。它和 `browser.html` 一样带有 import map，也可从项目根目录启动静态服务器后直接打开：
 
 ```bash
 python3 -m http.server 8080

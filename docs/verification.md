@@ -31,6 +31,7 @@
 | Node 消费者类型 | 独立消费者安装 `usb@2.19.2`、`@types/node@22.20.5` 与其 WebUSB 类型依赖后，使用 DOM + NodeNext、严格模式和 `skipLibCheck: false` 检查通过。 |
 | 原生依赖 smoke | `import('usb')` 成功；仅检查导出函数存在，没有调用设备枚举、open 或传输。 |
 | 网页示例 | 内联 JavaScript 语法解析通过，import map 的本地模块路径均存在；未执行真实浏览器授权或 USB 连接。 |
+| 调试页 | 用注入的假 WebUSB 设备在浏览器中验证连接、初始化、发送、TX/RX 状态、CAN 状态、接收表格、ID／通道过滤、暂停显示、CSV 导出、周期发送和断开重连；未接真实硬件。 |
 | 安装内容一致性 | 已安装包的关键源码、编译产物、README 和网页示例与最终项目文件逐字一致。 |
 | 版本标识 | 构建时生成 `dist/build-info.json`，包含包名、版本、提交哈希、`dirty` 标记和构建时间；安装后可直接核对待测版本。 |
 | BSD 许可副本 | `licenses/upstream-BSD-3-Clause.txt` 与上游 `LICENSE` 字节一致，1462 字节。 |

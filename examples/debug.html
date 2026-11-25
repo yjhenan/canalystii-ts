@@ -1,0 +1,154 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: Apache-2.0
+     Copyright (c) 2026 canalystii-ts contributors -->
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CANalyst-II 调试台</title>
+    <link rel="stylesheet" href="./debug.css">
+    <script type="importmap">
+      { "imports": { "canalystii-ts": "../dist/index.js", "canalystii-ts/browser": "../dist/browser.js" } }
+    </script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <h1>CANalyst-II 调试台</h1>
+        <p class="muted">浏览器 WebUSB · 经典 CAN · 请只在隔离台架使用</p>
+      </div>
+      <div class="device-actions">
+        <span id="conn-state" class="badge">未连接</span>
+        <select id="authorized-devices" title="已授权设备">
+          <option value="">无已授权设备</option>
+        </select>
+        <button id="refresh-devices" type="button">刷新设备</button>
+        <button id="connect-authorized" type="button" disabled>连接已授权</button>
+        <button id="connect-new" type="button" class="primary">请求新设备</button>
+        <button id="disconnect" type="button" class="danger" disabled>断开</button>
+      </div>
+    </header>
+
+    <div id="device-info" class="device-info muted">尚未连接设备</div>
+
+    <div id="error-banner" class="banner hidden" role="alert">
+      <span id="error-text"></span>
+      <button id="dismiss-error" type="button" class="link">关闭</button>
+    </div>
+
+    <main>
+      <section class="channels" id="channels"></section>
+
+      <section class="panel receive">
+        <header class="panel-head">
+          <h2>接收</h2>
+          <div class="toolbar">
+            <label class="check"><input id="polling" type="checkbox" checked> 轮询</label>
+            <label>间隔 ms <input id="poll-interval" type="number" min="10" max="10000" value="50"></label>
+            <button id="poll-apply" type="button">应用</button>
+            <button id="pause" type="button" disabled>暂停显示</button>
+            <button id="clear-frames" type="button" disabled>清空</button>
+            <label>最多行 <input id="max-rows" type="number" min="50" max="20000" value="500"></label>
+            <label>通道
+              <select id="filter-channel">
+                <option value="">全部</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+              </select>
+            </label>
+            <label>ID 过滤 <input id="filter-id" placeholder="如 123" spellcheck="false"></label>
+            <label class="check"><input id="autoscroll" type="checkbox" checked> 自动滚动</label>
+            <button id="export-csv" type="button" disabled>导出 CSV</button>
+          </div>
+        </header>
+        <div class="table-wrap" id="table-wrap">
+          <table id="frames">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>时间</th>
+                <th>通道</th>
+                <th>ID</th>
+                <th>类型</th>
+                <th>DLC</th>
+                <th>数据</th>
+                <th>设备时间</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="muted" id="frame-summary">0 帧</div>
+      </section>
+
+      <section class="panel log-panel">
+        <header class="panel-head">
+          <h2>日志</h2>
+          <button id="clear-log" type="button">清空日志</button>
+        </header>
+        <div id="log"></div>
+      </section>
+    </main>
+
+    <template id="channel-template">
+      <article class="panel channel">
+        <header class="channel-head">
+          <h2>通道 <span class="ch-num"></span></h2>
+          <span class="badge ch-state">未初始化</span>
+        </header>
+
+        <div class="row">
+          <label>波特率
+            <select class="ch-bitrate"></select>
+          </label>
+          <label class="custom-timing hidden">timing0
+            <input class="ch-t0" value="00" maxlength="2" spellcheck="false">
+          </label>
+          <label class="custom-timing hidden">timing1
+            <input class="ch-t1" value="1c" maxlength="2" spellcheck="false">
+          </label>
+          <label class="check"><input class="ch-start" type="checkbox" checked> 初始化后启动</label>
+        </div>
+
+        <div class="row">
+          <button class="ch-init" type="button">初始化</button>
+          <button class="ch-start-btn" type="button">启动</button>
+          <button class="ch-stop" type="button">停止</button>
+          <button class="ch-clear" type="button">清空 RX</button>
+          <button class="ch-status" type="button">刷新状态</button>
+          <button class="ch-can-status" type="button">CAN 状态</button>
+        </div>
+
+        <div class="status-line muted">
+          RX 待收 <b class="ch-rx">-</b> · TX 待发 <b class="ch-tx">-</b> · 未知 <b class="ch-unknown">-</b>
+          · 已发 <b class="ch-sent">0</b> · 已收 <b class="ch-recv">0</b>
+        </div>
+        <pre class="ch-can-raw hidden"></pre>
+
+        <fieldset class="send-box">
+          <legend>发送</legend>
+          <div class="row">
+            <label>ID（HEX）<input class="ch-id" value="123" spellcheck="false"></label>
+            <label class="check"><input class="ch-ext" type="checkbox"> 扩展帧</label>
+            <label class="check"><input class="ch-rtr" type="checkbox"> RTR</label>
+            <label>DLC（RTR）<input class="ch-dlc" type="number" min="0" max="8" value="0"></label>
+          </div>
+          <div class="row">
+            <label class="grow">数据（HEX）<input class="ch-data" value="01 02" spellcheck="false"></label>
+            <label class="check"><input class="ch-flush" type="checkbox"> 等待 TX 清空</label>
+            <label>超时 ms <input class="ch-flush-timeout" type="number" min="0" max="60000" value="100"></label>
+          </div>
+          <div class="row">
+            <button class="ch-send primary" type="button">发送一帧</button>
+            <label>周期 ms <input class="ch-period" type="number" min="1" max="60000" value="100"></label>
+            <button class="ch-period-start" type="button">开始周期</button>
+            <button class="ch-period-stop" type="button" disabled>停止周期</button>
+            <span class="muted ch-period-info"></span>
+          </div>
+        </fieldset>
+      </article>
+    </template>
+
+    <script type="module" src="./debug.js"></script>
+  </body>
+</html>
